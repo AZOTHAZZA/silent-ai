@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>数理的沈黙ベース生成AI</title>
+  <link rel="manifest" href="./manifest.json">
+  <link rel="icon" href="./icons/icon-192.png">
+  <meta name="theme-color" content="#0b0b0b">
+  <style>
+    body {
+      margin: 0;
+      font-family: "Noto Sans JP", sans-serif;
+      background: #0b0b0b;
+      color: #f0f0f0;
+      text-align: center;
+      padding: 2rem;
+    }
+    h1 {
+      margin-bottom: 1.5rem;
+      font-size: 1.5rem;
+      color: #fff;
+      letter-spacing: 0.05em;
+    }
+    textarea {
+      width: 90%;
+      max-width: 500px;
+      height: 100px;
+      margin-bottom: 1rem;
+      background: #111;
+      color: #fff;
+      border: 1px solid #333;
+      border-radius: 5px;
+      padding: 0.8rem;
+      font-family: monospace;
+      font-size: 1rem;
+    }
+    button {
+      background: #202020;
+      color: #fff;
+      border: none;
+      padding: 0.8rem 2rem;
+      border-radius: 5px;
+      cursor: pointer;
+      font-size: 1.1rem;
+      letter-spacing: 0.1em;
+    }
+    button:hover {
+      background: #333;
+    }
+    #output {
+      margin-top: 1.5rem;
+      background: #111;
+      border-radius: 5px;
+      padding: 1rem;
+      width: 90%;
+      max-width: 500px;
+      margin-inline: auto;
+      min-height: 80px;
+      text-align: left;
+      white-space: pre-wrap;
+      line-height: 1.5;
+    }
+  </style>
+</head>
+<body>
+  <h1>数理的沈黙ベース生成AI</h1>
+  <textarea id="input" placeholder="質問しましょう。"></textarea><br>
+  <button id="speakBtn">はなす</button>
+  <div id="output"></div>
+
+  <script type="module">
+    import { generate } from './ai/generator.js';
+    import { updateUI } from './fusion/fusionUI.js';
+
+    const inputEl = document.getElementById('input');
+    const outputEl = document.getElementById('output');
+    const speakBtn = document.getElementById('speakBtn');
+
+    speakBtn.addEventListener('click', async () => {
+      const command = inputEl.value.trim();
+      if (!command) return;
+      try {
+        const result = await generate(command);
+        updateUI(result, outputEl);
+      } catch (err) {
+        outputEl.textContent = '⚠️ 応答できませんでした。\n' + err;
+      }
+    });
+
+    // PWA対応 Service Worker（サブディレクトリ対応）
+    if ('serviceWorker' in navigator) {
+      navigator.serviceWorker.register('./sw.js')
+        .then(() => console.log('Service Worker 登録成功'))
+        .catch(console.error);
+    }
+  </script>
+</body>
+</html>
